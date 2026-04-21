@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}View Tax — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-cash-stack me-2"></i>Tax Detail</h2><div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('tax.list_records') }}">Tax</a> / #{{ record['tax_id'] }}</div></div>{% endblock %}
+{% block content %}
+<div class="card-custom mb-4"><div class="detail-grid">{% for col in columns %}<div class="detail-item"><div class="detail-label">{{ col }}</div><div class="detail-value">{{ record[col] if record[col] is not none else '—' }}</div></div>{% endfor %}</div></div>
+<div class="action-buttons"><a href="{{ url_for('tax.edit_record', record_id=record[pk]) }}" class="btn-primary-custom"><i class="bi bi-pencil"></i> Edit</a><a href="{{ url_for('tax.list_records') }}" class="btn-outline-custom"><i class="bi bi-arrow-left"></i> Back</a></div>
+{% endblock %}

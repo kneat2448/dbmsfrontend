@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ label }}</h2><div class="breadcrumb"><a href="/">Dashboard</a> / {{ label }}</div></div>{% endblock %}
+{% block content %}
+<!-- ═══ Aggregate Summary Panel ═══ -->
+<div class="agg-panel">
+    <div class="agg-item">
+        <div class="agg-value">{{ agg.total_violations }}</div>
+        <div class="agg-label">Total Violations</div>
+    </div>
+    <div class="agg-item">
+        <div class="agg-value">₹{{ "%.2f"|format(agg.total_fines|float) }}</div>
+        <div class="agg-label">Total Fines (SUM)</div>
+    </div>
+    <div class="agg-item">
+        <div class="agg-value">₹{{ "%.2f"|format(agg.avg_fine|float) }}</div>
+        <div class="agg-label">Avg Fine (AVG)</div>
+    </div>
+</div>
+
+{% if agg.per_vehicle %}
+<div class="card-custom mb-4"><div class="card-body">
+    <h6 style="font-weight:700;margin-bottom:12px;"><i class="bi bi-bar-chart-fill me-2"></i>Violations per Vehicle (GROUP BY — Top 5)</h6>
+    <div class="table-wrapper"><table class="table-custom"><thead><tr><th>Vehicle ID</th><th>Reg. Number</th><th>Count</th><th>Total Fines</th></tr></thead><tbody>
+    {% for v in agg.per_vehicle %}<tr><td>{{ v.vehicle_id }}</td><td>{{ v.registration_number or '—' }}</td><td>{{ v.cnt }}</td><td>₹{{ "%.2f"|format(v.total|float) }}</td></tr>{% endfor %}
+    </tbody></table></div>
+</div></div>
+{% endif %}
+
+<div class="toolbar">
+    <form class="search-bar" method="get">
+        <select name="search_col" class="form-select">{% for col in all_columns %}<option value="{{ col }}" {% if search_col==col %}selected{% endif %}>{{ col }}</option>{% endfor %}</select>
+        <input type="text" name="search" class="form-control" placeholder="Search…" value="{{ search }}">
+        <button type="submit" class="btn-primary-custom"><i class="bi bi-search"></i> Search</button>
+        {% if search %}<a href="{{ url_for('violations.list_records') }}" class="btn-outline-custom">Clear</a>{% endif %}
+    </form>
+    <a href="{{ url_for('violations.create_record') }}" class="btn-primary-custom"><i class="bi bi-plus-lg"></i> Add Violation</a>
+</div>
+{% if rows %}
+<div class="table-wrapper"><table class="table-custom"><thead><tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>
+{% for row in rows %}<tr>
+    {% for col in columns %}<td>{{ row[col] }}</td>{% endfor %}
+    <td><div class="action-buttons">
+        <a href="{{ url_for('violations.view_record', record_id=row[pk]) }}" class="btn-outline-custom"><i class="bi bi-eye"></i></a>
+        <a href="{{ url_for('violations.edit_record', record_id=row[pk]) }}" class="btn-outline-custom"><i class="bi bi-pencil"></i></a>
+        <button class="btn-danger-custom" data-bs-toggle="modal" data-bs-target="#del{{ loop.index }}"><i class="bi bi-trash"></i></button>
+    </div>
+    <div class="modal fade" id="del{{ loop.index }}" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Confirm Delete</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">Delete violation <strong>#{{ row[pk] }}</strong>?</div>
+        <div class="modal-footer"><button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{{ url_for('violations.delete_record', record_id=row[pk]) }}" style="display:inline;"><button type="submit" class="btn-danger-custom"><i class="bi bi-trash"></i> Delete</button></form></div>
+    </div></div></div></td>
+</tr>{% endfor %}</tbody></table></div>
+<div class="pagination-custom">
+    <a href="?page={{ page-1 }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if page<=1 %}disabled{% endif %}">&laquo;</a>
+    {% for p in range(1, total_pages+1) %}<a href="?page={{ p }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}
+    <a href="?page={{ page+1 }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if page>=total_pages %}disabled{% endif %}">&raquo;</a>
+</div>
+<p style="text-align:center;color:var(--text-muted);font-size:.8rem;margin-top:8px;">Page {{ page }}/{{ total_pages }} &bull; {{ total }} records</p>
+{% else %}<div class="empty-state"><div class="empty-icon">⚠️</div><p>No violations found.</p></div>{% endif %}
+{% endblock %}

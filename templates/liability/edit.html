@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Edit Liability — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-pencil-fill me-2"></i>Edit Liability</h2><div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('liability.list_records') }}">Liability</a> / Edit #{{ record['liability_id'] }}</div></div>{% endblock %}
+{% block content %}
+<div class="card-custom"><div class="card-body"><form method="post" class="form-custom"><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Liability ID</label><input type="number" class="form-control" value="{{ record['liability_id'] }}" disabled></div>
+    <div class="col-md-6"><label class="form-label">Liability Type *</label>
+        <select class="form-select" name="liability_type" required>
+            <option value="VIOLATION" {% if record['liability_type']=='VIOLATION' %}selected{% endif %}>VIOLATION</option>
+            <option value="TAX" {% if record['liability_type']=='TAX' %}selected{% endif %}>TAX</option>
+        </select>
+    </div>
+    <div class="col-md-6"><label class="form-label">Reference ID *</label><input type="number" class="form-control" name="reference_id" value="{{ record['reference_id'] }}" required></div>
+    <div class="col-md-6"><label class="form-label">Vehicle *</label><select class="form-select" name="vehicle_id" required>{% for v in vehicles %}<option value="{{ v.vehicle_id }}" {% if v.vehicle_id==record['vehicle_id'] %}selected{% endif %}>{{ v.vehicle_id }} — {{ v.registration_number or 'N/A' }}</option>{% endfor %}</select></div>
+</div><div class="mt-4"><button type="submit" class="btn-success-custom"><i class="bi bi-check-lg"></i> Update</button><a href="{{ url_for('liability.view_record', record_id=record['liability_id']) }}" class="btn-outline-custom ms-2">Cancel</a></div></form></div></div>
+{% endblock %}

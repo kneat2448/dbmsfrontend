@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Edit Violation — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-pencil-fill me-2"></i>Edit Violation</h2><div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('violations.list_records') }}">Violations</a> / Edit #{{ record['violation_id'] }}</div></div>{% endblock %}
+{% block content %}
+<div class="card-custom"><div class="card-body"><form method="post" class="form-custom"><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Violation ID</label><input type="number" class="form-control" value="{{ record['violation_id'] }}" disabled></div>
+    <div class="col-md-6"><label class="form-label">Vehicle *</label><select class="form-select" name="vehicle_id" required>{% for v in vehicles %}<option value="{{ v.vehicle_id }}" {% if v.vehicle_id==record['vehicle_id'] %}selected{% endif %}>{{ v.vehicle_id }} — {{ v.registration_number or 'N/A' }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Violation Type</label><input type="text" class="form-control" name="violation_type" value="{{ record['violation_type'] or '' }}"></div>
+    <div class="col-md-6"><label class="form-label">Violation Date</label><input type="date" class="form-control" name="violation_date" value="{{ record['violation_date'] or '' }}"></div>
+    <div class="col-md-6"><label class="form-label">Fine Amount</label><input type="number" step="0.01" class="form-control" name="fine_amount" value="{{ record['fine_amount'] or '' }}"></div>
+</div><div class="mt-4"><button type="submit" class="btn-success-custom"><i class="bi bi-check-lg"></i> Update</button><a href="{{ url_for('violations.view_record', record_id=record['violation_id']) }}" class="btn-outline-custom ms-2">Cancel</a></div></form></div></div>
+{% endblock %}

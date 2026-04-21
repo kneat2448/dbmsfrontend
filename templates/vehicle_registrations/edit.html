@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Edit Registration — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-pencil-fill me-2"></i>Edit Registration</h2><div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('vehicle_registrations.list_records') }}">Registrations</a> / Edit #{{ record['registration_id'] }}</div></div>{% endblock %}
+{% block content %}
+<div class="card-custom"><div class="card-body"><form method="post" class="form-custom"><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Registration ID</label><input type="number" class="form-control" value="{{ record['registration_id'] }}" disabled></div>
+    <div class="col-md-6"><label class="form-label">Citizen *</label><select class="form-select" name="citizen_id" required>{% for c in citizens %}<option value="{{ c.citizen_id }}" {% if c.citizen_id==record['citizen_id'] %}selected{% endif %}>{{ c.citizen_id }} — {{ c.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Registration Date</label><input type="date" class="form-control" name="registration_date" value="{{ record['registration_date'] or '' }}"></div>
+    <div class="col-md-6"><label class="form-label">Expiry Date</label><input type="date" class="form-control" name="expiry_date" value="{{ record['expiry_date'] or '' }}"></div>
+</div><div class="mt-4"><button type="submit" class="btn-success-custom"><i class="bi bi-check-lg"></i> Update</button><a href="{{ url_for('vehicle_registrations.view_record', record_id=record['registration_id']) }}" class="btn-outline-custom ms-2">Cancel</a></div></form></div></div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Add Citizen — Transport Office DBMS{% endblock %}
+
+{% block header %}
+<div class="page-header">
+    <h2><i class="bi bi-plus-circle-fill me-2"></i>Add Citizen</h2>
+    <div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('citizen.list_records') }}">Citizens</a> / Create</div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-body">
+        <form method="post" class="form-custom" id="citizen-create-form">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="citizen_id">Citizen ID *</label>
+                    <input type="number" class="form-control" id="citizen_id" name="citizen_id" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="name">Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="date_of_birth">Date of Birth *</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn-success-custom"><i class="bi bi-check-lg"></i> Insert Record</button>
+                <a href="{{ url_for('citizen.list_records') }}" class="btn-outline-custom ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

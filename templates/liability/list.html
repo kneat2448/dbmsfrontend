@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-shield-exclamation me-2"></i>{{ label }}</h2><div class="breadcrumb"><a href="/">Dashboard</a> / {{ label }}</div></div>{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <form class="search-bar" method="get">
+        <select name="search_col" class="form-select">{% for col in all_columns %}<option value="{{ col }}" {% if search_col==col %}selected{% endif %}>{{ col }}</option>{% endfor %}</select>
+        <input type="text" name="search" class="form-control" placeholder="Search…" value="{{ search }}">
+        <button type="submit" class="btn-primary-custom"><i class="bi bi-search"></i> Search</button>
+        {% if search %}<a href="{{ url_for('liability.list_records') }}" class="btn-outline-custom">Clear</a>{% endif %}
+    </form>
+    <a href="{{ url_for('liability.create_record') }}" class="btn-primary-custom"><i class="bi bi-plus-lg"></i> Add Liability</a>
+</div>
+{% if rows %}
+<div class="table-wrapper"><table class="table-custom"><thead><tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>
+{% for row in rows %}<tr>
+    {% for col in columns %}
+    <td>
+        {% if col == 'liability_type' %}
+            <span class="badge-status {% if row[col] == 'VIOLATION' %}badge-violation{% else %}badge-tax{% endif %}">{{ row[col] }}</span>
+        {% else %}
+            {{ row[col] }}
+        {% endif %}
+    </td>
+    {% endfor %}
+    <td><div class="action-buttons">
+        <a href="{{ url_for('liability.view_record', record_id=row[pk]) }}" class="btn-outline-custom"><i class="bi bi-eye"></i></a>
+        <a href="{{ url_for('liability.edit_record', record_id=row[pk]) }}" class="btn-outline-custom"><i class="bi bi-pencil"></i></a>
+        <button class="btn-danger-custom" data-bs-toggle="modal" data-bs-target="#del{{ loop.index }}"><i class="bi bi-trash"></i></button>
+    </div>
+    <div class="modal fade" id="del{{ loop.index }}" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Confirm Delete</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">Delete liability <strong>#{{ row[pk] }}</strong>?</div>
+        <div class="modal-footer"><button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{{ url_for('liability.delete_record', record_id=row[pk]) }}" style="display:inline;"><button type="submit" class="btn-danger-custom"><i class="bi bi-trash"></i> Delete</button></form></div>
+    </div></div></div></td>
+</tr>{% endfor %}</tbody></table></div>
+<div class="pagination-custom">
+    <a href="?page={{ page-1 }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if page<=1 %}disabled{% endif %}">&laquo;</a>
+    {% for p in range(1, total_pages+1) %}<a href="?page={{ p }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}
+    <a href="?page={{ page+1 }}&search={{ search }}&search_col={{ search_col }}" class="page-link {% if page>=total_pages %}disabled{% endif %}">&raquo;</a>
+</div>
+<p style="text-align:center;color:var(--text-muted);font-size:.8rem;margin-top:8px;">Page {{ page }}/{{ total_pages }} &bull; {{ total }} records</p>
+{% else %}<div class="empty-state"><div class="empty-icon">🛡️</div><p>No liability records found.</p></div>{% endif %}
+{% endblock %}

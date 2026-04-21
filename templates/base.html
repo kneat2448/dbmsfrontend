@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transport Office DBMS — A database management front-end for citizen, vehicle, tax, and violation records.">
+    <title>{% block title %}Transport Office DBMS{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // Apply saved theme BEFORE body renders to avoid flash
+        (function() {
+            var t = localStorage.getItem('dbms-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            document.documentElement.setAttribute('data-bs-theme', t);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="app-wrapper">
+        <!-- ═══ Sidebar ═══ -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1><i class="bi bi-database-fill"></i> Transport Office</h1>
+                <p>DBMS Course Project</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-title">Dashboard</div>
+                <a href="{{ url_for('index') }}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-grid-1x2-fill"></i></span>
+                    Overview
+                </a>
+
+                <div class="sidebar-section-title">People</div>
+                <a href="{{ url_for('citizen.list_records') }}" class="sidebar-link {% if '/citizen' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-people-fill"></i></span>
+                    Citizens
+                </a>
+                <a href="{{ url_for('driving_license.list_records') }}" class="sidebar-link {% if '/driving_license' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-card-heading"></i></span>
+                    Driving Licenses
+                </a>
+
+                <div class="sidebar-section-title">Vehicles</div>
+                <a href="{{ url_for('vehicles.list_records') }}" class="sidebar-link {% if '/vehicles' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-truck"></i></span>
+                    Vehicles
+                </a>
+                <a href="{{ url_for('vehicle_registrations.list_records') }}" class="sidebar-link {% if '/vehicle_registrations' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
+                    Registrations
+                </a>
+
+                <div class="sidebar-section-title">Violations & Tax</div>
+                <a href="{{ url_for('violations.list_records') }}" class="sidebar-link {% if '/violations' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                    Violations
+                </a>
+                <a href="{{ url_for('tax.list_records') }}" class="sidebar-link {% if '/tax' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-cash-stack"></i></span>
+                    Tax
+                </a>
+
+                <div class="sidebar-section-title">Payments</div>
+                <a href="{{ url_for('payment_info.list_records') }}" class="sidebar-link {% if '/payment_info' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-credit-card-fill"></i></span>
+                    Payment Info
+                </a>
+                <a href="{{ url_for('liability.list_records') }}" class="sidebar-link {% if '/liability' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-shield-exclamation"></i></span>
+                    Liability
+                </a>
+                <a href="{{ url_for('paid_using.list_records') }}" class="sidebar-link {% if '/paid_using' in request.path %}active{% endif %}">
+                    <span class="icon"><i class="bi bi-arrow-left-right"></i></span>
+                    Paid Using
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <span>DBMS Sem-4 &bull; Flask</span>
+                <div class="theme-toggle" id="themeToggle">
+                    <button class="theme-toggle-btn" data-theme-value="light" title="Light mode">
+                        <i class="bi bi-sun-fill"></i>
+                    </button>
+                    <button class="theme-toggle-btn" data-theme-value="dark" title="Dark mode">
+                        <i class="bi bi-moon-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ Main Content ═══ -->
+        <main class="main-content">
+            {% block header %}{% endblock %}
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                <div class="flash-msg {{ category }}">
+                    {% if category == 'success' %}<i class="bi bi-check-circle-fill"></i>
+                    {% elif category == 'error' %}<i class="bi bi-x-circle-fill"></i>
+                    {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="page-body">
+                {% block content %}{% endblock %}
+            </div>
+
+            <!-- Footer with query time -->
+            <footer style="padding: 16px 36px; text-align: right;">
+                {% if query_time is defined and query_time is not none %}
+                <span class="query-time-badge">
+                    <span class="dot"></span>
+                    Query executed in <strong>{{ query_time }} ms</strong>
+                </span>
+                {% endif %}
+            </footer>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function() {
+            var saved = localStorage.getItem('dbms-theme') || 'dark';
+            applyTheme(saved);
+
+            document.getElementById('themeToggle').addEventListener('click', function(e) {
+                var btn = e.target.closest('[data-theme-value]');
+                if (!btn) return;
+                applyTheme(btn.getAttribute('data-theme-value'));
+            });
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('dbms-theme', theme);
+                // Update active button
+                document.querySelectorAll('.theme-toggle-btn').forEach(function(b) {
+                    b.classList.toggle('active', b.getAttribute('data-theme-value') === theme);
+                });
+            }
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

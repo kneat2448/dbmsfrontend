@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}Add Paid Using — Transport Office DBMS{% endblock %}
+{% block header %}<div class="page-header"><h2><i class="bi bi-plus-circle-fill me-2"></i>Link Liability to Payment</h2><div class="breadcrumb"><a href="/">Dashboard</a> / <a href="{{ url_for('paid_using.list_records') }}">Paid Using</a> / Create</div></div>{% endblock %}
+{% block content %}
+<div class="card-custom"><div class="card-body"><form method="post" class="form-custom"><div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label">Liability *</label>
+        <select class="form-select" name="liability_id" required>
+            <option value="">— Select Liability —</option>
+            {% for l in liabilities %}<option value="{{ l.liability_id }}">{{ l.liability_id }} — {{ l.liability_type }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Payment *</label>
+        <select class="form-select" name="payment_id" required>
+            <option value="">— Select Payment —</option>
+            {% for p in payments %}<option value="{{ p.payment_id }}">{{ p.payment_id }} — {{ p.payment_mode or 'N/A' }} (₹{{ p.amount_paid or '0' }})</option>{% endfor %}
+        </select>
+    </div>
+</div><div class="mt-4"><button type="submit" class="btn-success-custom"><i class="bi bi-check-lg"></i> Insert Link</button><a href="{{ url_for('paid_using.list_records') }}" class="btn-outline-custom ms-2">Cancel</a></div></form></div></div>
+{% endblock %}

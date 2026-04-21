@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Transport Office DBMS{% endblock %}
+
+{% block header %}
+<div class="page-header">
+    <h2><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</h2>
+    <div class="breadcrumb">Live database statistics</div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    {% for s in stats %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-label">{{ s.table | replace('_', ' ') }}</div>
+            <div class="stat-value">{{ s.count }}</div>
+            <a href="/{{ s.table }}/" class="stat-link">
+                View records <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card-custom">
+    <div class="card-body">
+        <h5 style="font-weight: 700; margin-bottom: 12px;"><i class="bi bi-info-circle me-2"></i>About this project</h5>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; margin: 0;">
+            This application provides a web-based front-end for managing the <strong>Transport Office</strong> database.
+            It supports full CRUD operations across <strong>9 tables</strong> — citizen records, vehicles, driving licenses,
+            vehicle registrations, violations, taxes, payments, liabilities, and payment linkages.
+            All queries use <strong>raw SQL</strong> with parameterized placeholders. Foreign key constraints are
+            enforced and handled gracefully with user-friendly error messages.
+        </p>
+    </div>
+</div>
+{% endblock %}
